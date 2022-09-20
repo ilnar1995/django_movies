@@ -1,0 +1,63 @@
+version: "3.8"
+
+services:
+  db_movie:
+    image: postgres:11-alpine
+    container_name: db_movie
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - '5432'
+    env_file:
+      - ./.env.prod.db
+  web:
+    build:
+      context: ./
+      dockerfile: Dockerfile.prod
+    container_name: django_dm
+    command:  bash -c "python manage.py makemigrations &&
+              python manage.py migrate --noinput &&
+              python manage.py collectstatic --no-input --clear &&
+              gunicorn django_movie.wsgi:application --bind 0.0.0.0:8000"
+    volumes:
+      - static_volume:/home/app/web/staticfiles
+      - media_volume:/home/app/web/media
+    env_file:
+      - .env.prod
+    expose:
+      - 8000
+    depends_on:
+      - db_movie
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+  celery:
+    build: .
+    command: celery -A django_movie worker -l info
+    volumes:
+      - .:/code
+    depends_on:
+      - web
+      - redis
+    env_file:
+      - ./.env.prod
+  nginx:
+    build: ./nginx
+    ports:
+      - "80:80"
+    volumes:
+      - static_volume:/home/app/web/staticfiles
+      - media_volume:/home/app/web/media
+    depends_on:
+      - web
+
+#  redis:
+#    image: redis:5-alpine
+#    restart: always
+
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
