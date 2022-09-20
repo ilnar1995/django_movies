@@ -1,1 +1,1 @@
-# django_projects_copy
+# django_movies_copy
