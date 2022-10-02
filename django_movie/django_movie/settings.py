@@ -152,9 +152,12 @@ CORS_ORIGIN_WHITELIST = [
     'http://localhost:8080',
     'http://localhost:8081',
     'http://localhost:8000',
+    'http://1030197-cb51329.tmweb.ru',
+    'http://188.225.44.51:80',
+
 ]
 
-CSRF_TRUSTED_ORIGINS = ["http://localhost:1337", "https://www.yourdomain.com"]
+CSRF_TRUSTED_ORIGINS = ["http://localhost:1337", "https://www.yourdomain.com", "http://1030197-cb51329.tmweb.ru", "http://188.225.44.51:80",]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
